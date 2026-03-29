@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Face Tracker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0; left: 0;
+    }
+    #status {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.55);
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">Initializing camera…</div>
+
+  <!-- p5.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
+  <!-- ml5.js pinned to 1.2.1 which has faceMesh -->
+  <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+
+  <script>
+    
+    let bodySegmentation;
+    let segmentation;
+
+    let options = {
+    maskType: "parts",
+    };
+
+    let textX;
+    let textY;
+    let duration = 0;
+    let count = 0;
+    let poesry =["I see you all in radiant color", 
+    "lambent with light, you dance", 
+    "the planes of you, sliding through electrons",
+    "touching without touching, revolving",
+    "what would it have been like to feel what you feel?"];
+
+
+    new p5(function(p) {
+
+      p.setup = async function() {
+        statusEl = document.getElementById('status');
+        const cnv = p.createCanvas(p.windowWidth, p.windowHeight);
+        cnv.style('position', 'fixed');
+        cnv.style('top', '0');
+        cnv.style('left', '0');
+
+        textX = p.random(10,p.width-200);
+        textY = p.random(200,p.height-200);
+
+        capture = p.createCapture(p.VIDEO);
+        capture.size(p.windowWidth, p.windowHeight);
+        capture.hide();
+
+        bodySegmentation = ml5.bodySegmentation("BodyPix", options);
+        bodySegmentation.detectStart(capture, gotResults);
+      };
+
+      p.draw = function() {
+        p.background(51);
+        if (segmentation) {
+            p.image(segmentation.mask, 0, 0, p.width, p.height);
+
+            p.textSize(24);
+            p.textFont('Courier New');
+            p.fill(0);
+            p.text(poesry[count],textX, textY)
+
+            
+            if (p.frameCount % 60 == 0) { // if the frameCount is divisible by 60, then a second has passed. 
+                if (duration < 2) {
+                    duration ++;
+                } else {
+                    count ++;
+                    duration = 0;
+                    textX = p.random(10,p.width-200);
+                    textY = p.random(200,p.height-200);
+                    if (count == poesry.length) {
+                        count = 0
+                    } 
+                }
+            }
+        }
+      };
+
+      // callback function for body segmentation
+        function gotResults(result) {
+        segmentation = result;
+        }
+
+      p.windowResized = function() {
+        p.resizeCanvas(p.windowWidth, p.windowHeight);
+        capture.size(p.windowWidth, p.windowHeight);
+      };
+    });
+  </script>
+</body>
+</html>
