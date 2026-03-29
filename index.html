@@ -36,8 +36,8 @@
 
   <!-- p5.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
-  <!-- ml5.js pinned to 1.2.1 which has faceMesh -->
-  <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+  <!-- ml5.js pinned to 1 -->
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
 
   <script>
     
@@ -75,7 +75,7 @@
         capture.size(p.windowWidth, p.windowHeight);
         capture.hide();
 
-        bodySegmentation = ml5.bodySegmentation("BodyPix", options);
+        bodySegmentation = await ml5.bodySegmentation("BodyPix", options);
         bodySegmentation.detectStart(capture, gotResults);
       };
 

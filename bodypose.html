@@ -36,7 +36,7 @@
 
   <!-- p5.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
-  <!-- ml5.js pinned to 1.2.1 which has faceMesh -->
+  <!-- ml5.js pinned to 1 -->
   <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
 
   <script>
@@ -72,7 +72,7 @@
         capture.size(p.windowWidth, p.windowHeight);
         capture.hide();
 
-        bodyPose = ml5.bodyPose();
+        bodyPose = await ml5.bodyPose();
         // Start detecting poses in the webcam video
         bodyPose.detectStart(capture, gotPoses);
         // Get the skeleton connection information
